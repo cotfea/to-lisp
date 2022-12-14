@@ -4,7 +4,7 @@ includes:
   run:
     taskfile: ~/.taskfilehub/hubs/run.yml
     vars:
-      ContainerName: to-newlisp
+      ContainerName: to-commonlisp
       ImageName: mooxe/apt_lisp
 
 tasks:

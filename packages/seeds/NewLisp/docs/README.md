@@ -62,3 +62,111 @@ Hello newLisp!!!
 - module
 
   导入 ```$NEWLISPDIR``` 下 modules 文件夹下模块
+
+### 其他内置 api
+
+- constant
+
+  绑定操作符到 方法
+
+- import
+
+  直接导入动态链接库 的指定 方法，类似于 ffi
+
+### 运算
+
+- + - * / ++ -- %
+
+  算术运算符
+
+- < > = <= >= !=
+
+  逻辑操作符
+
+- abs
+
+  取绝对值
+
+- gcd
+
+  取最大公约数
+
+- even?
+
+  判断是否为偶数
+
+- odd?
+
+  判断是否为奇数
+
+- number?
+
+  判断是否为数值，包含整数和浮点数形式
+
+- zero?
+
+  判断是否为 0，包含整数和浮点数形式 0 或 0.0
+
+- float
+
+  转换为 浮点数
+
+- bigint
+
+  转换为 大整数
+
+### lambda
+
+- lambda / fn
+
+  创建匿名函数
+
+- lambda-macro
+
+  创建匿名宏
+
+- set
+
+  设置变量
+
+- context
+
+  设置 key-mirror
+
+使用 set - lambda 设置具名函数
+
+## 表达式列表
+
+- length
+
+  返回表达式长度
+
+- first
+
+  返回表达式第一个元素
+
+- last
+
+  返回表达式最后一个元素
+
+- append
+
+  追加
+
+- cons
+
+  类似于 join
+
+## 方法
+
+- define
+
+- apply
+
+## 函数式
+
+- map
+
+- setq
+
+- setf
