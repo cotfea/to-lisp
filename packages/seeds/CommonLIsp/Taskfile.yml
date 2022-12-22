@@ -19,3 +19,21 @@ tasks:
       - task: run:run-dev
         vars:
           run_option: '-v ~/.taskfilehub:/root/.taskfilehub'
+
+  install-quicklisp:
+    cmds:
+      - apt install -y dialog cl-asdf cl-quicklisp buildapp
+      - sbcl
+          --load /usr/share/common-lisp/source/quicklisp/quicklisp.lisp
+          --eval "(quicklisp-quickstart:install)"
+          --eval "(exit)"
+      - mv $HOME/quicklisp $HOME/.quicklisp
+
+  update-quicklisp:
+    cmds:
+      - sbcl
+          --noinform
+          --load ~/.quicklisp/setup.lisp
+          --eval "(ql:update-dist \"quicklisp\")"
+          --eval "(ql:update-client)"
+          --eval "(exit)"

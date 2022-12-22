@@ -5,16 +5,17 @@
     (with-standard-io-syntax
       (setf *db* (read in)))))
 
-(defun where
-  (&key
-    title artist rating
-    (ripped nil ripped-p))
-  #'(lambda (cd)
-      (and
-        (if title (equal (getf cd :title) title) t)
-        (if artist (equal (getf cd :artist) artist) t)
-        (if rating (equal (getf cd :rating) rating) t)
-        (if ripped-p (equal (getf cd :ripped) ripped) t))))
+(defun make-comparison-expr (field value)
+  `(equal (get cd ,field) ,value)
+)
+
+(defun make-comparisons-list (fields)
+  (loop while fields
+    collecting (make-comparison-expr (pop fields) (pop fields))))
+
+(defmacro where (&rest clauses)
+  `#'(lambda (cd)
+    (and ,@(make-comparisions-list clauses))))
 
 (defun update
   (selector-fn
