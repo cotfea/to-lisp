@@ -1,0 +1,49 @@
+version: '3'
+
+vars:
+  proj_name: hello
+
+tasks:
+
+  default:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+
+  sbcl:
+    cmds:
+      - sbcl
+          --noinform
+          --load ~/.quicklisp/setup.lisp
+
+  rm_proj:
+    cmds:
+      - rm -rf ./src
+      - rm -rf $HOME/.local/share/common-lisp/source/{{.proj_name}}
+
+  mk_proj:
+    vars:
+      link_path: $HOME/.local/share/common-lisp/source
+    cmds:
+      - sbcl
+          --noinform
+          --load ~/.quicklisp/setup.lisp
+          --eval "(ql:quickload \"quickproject\")"
+          --eval "(quickproject:make-project
+              \"./src/{{.proj_name}}/\"
+              :name \"{{.proj_name}}\"
+              )"
+          --eval "(exit)"
+
+      - mkdir -p {{.link_path}}
+      - ln -s $(pwd)/src/{{.proj_name}}
+          {{.link_path}}/{{.proj_name}}
+
+  load_proj:
+    cmds:
+      - cd ./src
+        ; sbcl
+          --noinform
+          --load ~/.quicklisp/setup.lisp
+          --eval "(asdf:load-system \"{{.proj_name}}\")"
+          --eval "(exit)"
