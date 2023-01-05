@@ -1,4 +1,5 @@
 ;;;; package.lisp
 
 (defpackage #:hello
-  (:use #:cl))
+  (:use #:cl)
+  (:export #:main))

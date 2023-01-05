@@ -10,20 +10,25 @@ tasks:
       - echo 'Hello World from Task!'
     silent: true
 
-  sbcl:
+  repl:
     cmds:
       - sbcl
           --noinform
           --load ~/.quicklisp/setup.lisp
 
-  rm_proj:
+  rm:
     cmds:
       - rm -rf ./src
       - rm -rf $HOME/.local/share/common-lisp/source/{{.proj_name}}
 
-  mk_proj:
+  link:
     vars:
-      link_path: $HOME/.local/share/common-lisp/source
+      lispsource_home: $HOME/.local/share/common-lisp/source
+    cmds:
+      - ln -s $(pwd)/src/{{.proj_name}}
+          {{.lispsource_home}}/{{.proj_name}}
+
+  create:
     cmds:
       - sbcl
           --noinform
@@ -34,16 +39,50 @@ tasks:
               :name \"{{.proj_name}}\"
               )"
           --eval "(exit)"
+      - cp ./source/{{.proj_name}}.lisp ./src/{{.proj_name}}/hello.lisp
+      - cp ./source/package.lisp ./src/{{.proj_name}}/package.lisp
+      - task: link
 
-      - mkdir -p {{.link_path}}
-      - ln -s $(pwd)/src/{{.proj_name}}
-          {{.link_path}}/{{.proj_name}}
-
-  load_proj:
+  dev:
+    # --eval "(asdf:operate 'asdf:load-op '{{.proj_name}})"
     cmds:
       - cd ./src
         ; sbcl
           --noinform
           --load ~/.quicklisp/setup.lisp
           --eval "(asdf:load-system \"{{.proj_name}}\")"
+          --eval "({{.proj_name}}:main \"\")"
           --eval "(exit)"
+
+  # (format t "~a" "Hello World!!!")
+  # (write-line "Hello World!!!"))
+
+  # (defun main (argv)
+  # (declare (ignore argv))
+  # (write-line "Hello World!!!"))
+
+  build:
+    vars:
+      lispsource_home: $HOME/.local/share/common-lisp/source
+    # --eval '(defun main (args) (write-string (drakma:http-request (second args))))' \
+    # --eval "(buildapp:build-buildapp \"/usr/bin/buildapp\")"
+    # \"--manifest-file\" \"/tmp/quicklisp-manifest.txt\"
+    cmds:
+      - mkdir -p ./bin
+      - sbcl
+          --noinform
+          --load ~/.quicklisp/setup.lisp
+          --eval "(ql:quickload :buildapp)"
+          --eval "
+              (buildapp::main
+                '(
+                  \"BUILDAPP\"
+                  \"--load-system\" \"{{.proj_name}}\"
+                  \"--entry\" \"{{.proj_name}}:main\"
+                  \"--output\" \"./bin/{{.proj_name}}\"))
+            "
+          --eval "(exit)"
+
+  run:
+    cmds:
+      - ./bin/{{.proj_name}}
